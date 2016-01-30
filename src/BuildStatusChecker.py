@@ -17,8 +17,8 @@ class BuildStatusChecker:
 
     def get_game_status(self, game):
         for item in self.data["apps"]:
-            if item["id"].find(game) is not -1:
-                return item["state"] == "success"
+            if item["id"].lower().find(game) is not -1:
+                return item["state"]
 
     def get_status(self, games):
         for game in games:

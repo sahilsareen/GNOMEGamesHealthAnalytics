@@ -36,10 +36,29 @@ class Neo4jGraphCreator:
         dependency_node = self.get_dependency_node(dependency_name)
         self.graph.create(Relationship(dependency_node, "USED_BY", game_node))
 
-    def generate_neo4j_graph(self, games_dependencies):
+    def generate_game_dependency_graph(self, games_dependencies):
         for game_name, dependencies in games_dependencies.iteritems():
             # Create a game node
             self.add_game_node(game_name)
             # Create dependency nodes
             for dependency in dependencies:
                 self.add_dependency_node(game_name, dependency)
+
+    def generate_build_status_graph(self, games, build_status):
+        build_pass_node = Node("BuildPassed", name="Build Passed")
+        build_fail_node = Node("BuildFailed", name="Build Failed")
+        build_timeout_node = Node("BuildTimeout", name="Build Timeout")
+        build_missing_node = Node("BuildInfoMissing", name="Build Info Missing")
+        for game in games:
+            if "success" == build_status[game]:
+                self.graph.create(Relationship(self.games_hash[game], "STATUS_IS", build_pass_node))
+            elif "failure" == build_status[game]:
+                self.graph.create(Relationship(self.games_hash[game], "STATUS_IS", build_fail_node))
+            elif "timeout" == build_status[game]:
+                self.graph.create(Relationship(self.games_hash[game], "STATUS_IS", build_timeout_node))
+            elif build_status[game] is None:
+                self.graph.create(Relationship(self.games_hash[game], "STATUS_IS", build_missing_node))
+
+    def build_graph(self, games_dependencies, build_status):
+        self.generate_game_dependency_graph(games_dependencies)
+        self.generate_build_status_graph(games_dependencies.keys(), build_status)

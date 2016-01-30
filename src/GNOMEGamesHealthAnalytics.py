@@ -38,6 +38,7 @@ class GNOMEGamesHealthAnalytics:
 
     def run(self):
         games_dependencies = GitHubConfigExtractor().extract_games_config(self.games_config)
+        build_status = BuildStatusChecker(self.games_config.build_url).get_status(self.games_config.games)
 
         # Enable to directly print the Cypher commands to console
         # from CypherGenerator import CypherGenerator
@@ -46,7 +47,7 @@ class GNOMEGamesHealthAnalytics:
         #    print command
 
         # Build the graph
-        Neo4jGraphCreator().generate_neo4j_graph(games_dependencies)
+        neo4j_graph = Neo4jGraphCreator().build_graph(games_dependencies,build_status)
 
 
 if __name__ == '__main__':
