@@ -10,6 +10,8 @@
 # dependencies of the app
 
 import requests
+import logging
+
 from DependencyExtractor import DependencyExtractor
 
 
@@ -17,11 +19,15 @@ class GitHubConfigExtractor:
     def __init__(self):
         self.session = requests.session()
         self.config = {}
+        self.logger = logging.getLogger(self.__class__.__name__)
 
     # Extract the config for a given game
     def extract_config(self, games_name, url):
         req = self.session.get(url)
-        return DependencyExtractor(req.content).get_all()
+        dependencies = DependencyExtractor(req.content).get_all()
+        if not dependencies:
+            self.logger.warn("No dependencies found for %s" % games_name)
+        return dependencies
 
     # Extract the config for all games in the config
     # Returns all the extracted dependencies as a dictionary
@@ -30,6 +36,7 @@ class GitHubConfigExtractor:
         # which needs the game name to be put in place
         url = games_config.github_raw_url
         for game_name in games_config.games:
+            self.logger.info("Extracting config for %s" % game_name)
             self.config[game_name] = self.extract_config(game_name, url % game_name)
 
         return self.config

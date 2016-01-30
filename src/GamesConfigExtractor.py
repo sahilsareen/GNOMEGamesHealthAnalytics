@@ -10,15 +10,15 @@
 # present in resources(games.json)
 # TODO: Upgrade to typesafe config: https://github.com/chimpler/pyhocon
 
-
 import json
 
 
 class GamesConfigExtractor:
-    def __init__(self, file_name="games.json"):
+    def __init__(self, file_name):
         with open(file_name) as data_file:
             config = json.load(data_file)
 
         self.games = config["games"]
         self.github_raw_url = config["github_raw_configure"]
         self.build_url = config["build_url"] % config["date"]
+        self.logging_level = config["logging_level"]

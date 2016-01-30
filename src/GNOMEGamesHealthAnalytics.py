@@ -7,21 +7,38 @@
 # license.
 
 import sys
+import logging
+
 from GamesConfigExtractor import GamesConfigExtractor
 from GitHubConfigExtractor import GitHubConfigExtractor
 from Neo4jGraphCreator import Neo4jGraphCreator
+from BuildStatusChecker import BuildStatusChecker
 
 GAMES_CONFIG_FILE = "../resources/games.json"
 
 
 class GNOMEGamesHealthAnalytics:
     def __init__(self, config_file=GAMES_CONFIG_FILE):
-        print("Analysing games health using config in %s" % config_file)
-        self.game_config_file = config_file
+        self.games_config = GamesConfigExtractor(config_file)
+
+        def get_level():
+            return {
+                'DEBUG': logging.DEBUG,
+                'INFO': logging.INFO,
+                'WARN': logging.WARNING,
+                'ERROR': logging.ERROR,
+                'FATAL': logging.FATAL,
+                'CRITICAL': logging.CRITICAL
+            }[self.games_config.logging_level]
+
+        logging.basicConfig(format="[%(levelname)s] %(name)s: %(message)s", level=get_level())
+
+        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.info("Analysing games health using config in %s" % config_file)
 
     def run(self):
-        games_config = GamesConfigExtractor(self.game_config_file)
-        games_dependencies = GitHubConfigExtractor().extract_games_config(games_config)
+        games_dependencies = GitHubConfigExtractor().extract_games_config(self.games_config)
+
         # Enable to directly print the Cypher commands to console
         # from CypherGenerator import CypherGenerator
         # neo4j_cypher = CypherGenerator().generate_neo4j_cypher(games_dependencies)
@@ -30,6 +47,7 @@ class GNOMEGamesHealthAnalytics:
 
         # Build the graph
         Neo4jGraphCreator().generate_neo4j_graph(games_dependencies)
+
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:

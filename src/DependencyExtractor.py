@@ -16,18 +16,22 @@
 # TODO: Make sure there are no duplicate dependencies
 # TODO: Add unit tests
 
+import logging
+
 
 class DependencyExtractor:
     def __init__(self, config_content):
         self.lines = config_content.splitlines()
         self.num_lines = len(self.lines)
         self.dependencies = []
+        self.logger = logging.getLogger(self.__class__.__name__)
 
     def get_all(self):
         done = False
         curr_line = 0
 
         while done is False and curr_line < self.num_lines:
+            self.logger.debug("Processing line: %s", self.lines[curr_line])
             # Pull out the modules this game depends on
             if self.lines[curr_line].strip().startswith("PKG_CHECK_MODULES"):
                 curr_line += 1

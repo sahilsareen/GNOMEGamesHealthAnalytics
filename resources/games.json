@@ -21,5 +21,6 @@
   ],
   "github_raw_configure": "https://raw.githubusercontent.com/GNOME/%s/master/configure.ac",
   "date": "2016/01/28",
-  "build_url": "https://build.gnome.org/continuous/buildmaster/builds/%s/1/applicationstest/apps.json"
+  "build_url": "https://build.gnome.org/continuous/buildmaster/builds/%s/1/applicationstest/apps.json",
+  "logging_level": "INFO"
 }
