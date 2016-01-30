@@ -6,49 +6,40 @@
 # version. See http://www.gnu.org/copyleft/gpl.html the full text of the
 # license.
 
-# This is here incase there is a need to directly generate Cypher
-# graph commands for building the graph on Neo4j
-
-CREATE_GAME_NODE = "CREATE (%s:Game {name: '%s'})"
-CREATE_DEPENDENCY = "MERGE (%s:Dependency {name:'%s'})-[:USED_BY]->(%s)"
+from py2neo import Graph, Node, Relationship
 
 
-class CypherGenerator:
+class Neo4jGraphCreator:
     def __init__(self):
-        self.cypher_commands = []
+        self.graph = Graph()
         self.dependency_hash = {}
         self.games_hash = {}
         self.id = 0
 
-    def get_identifier(self):
-        self.id += 1
-        return "var%d" % self.id
-
-    def get_dependency_id(self, dependency_name):
+    def get_dependency_node(self, dependency_name):
         if dependency_name in self.dependency_hash:
             return self.dependency_hash[dependency_name]
 
-        dependency_id = self.get_identifier()
-        self.dependency_hash[dependency_name] = dependency_id
-        return dependency_id
+        dependency_node = Node("Dependency", name=dependency_name)
+        self.dependency_hash[dependency_name] = dependency_node
+        return dependency_node
 
     def add_game_node(self, game_name):
         # Add it to the cypher commands
-        game_id = self.get_identifier()
-        self.games_hash[game_name] = game_id
-        self.cypher_commands.append(CREATE_GAME_NODE % (game_id, game_name))
+        game_node = Node("Game", name=game_name)
+        self.games_hash[game_name] = game_node
+        self.graph.create(game_node)
 
     def add_dependency_node(self, game_name, dependency_name):
         # Get the game_id corresponding to the game_name to avoid duplicate nodes
-        game_id = self.games_hash[game_name]
-        dependency_id = self.get_dependency_id(dependency_name)
-        self.cypher_commands.append(CREATE_DEPENDENCY % (dependency_id, game_name,game_id))
+        game_node = self.games_hash[game_name]
+        dependency_node = self.get_dependency_node(dependency_name)
+        self.graph.create(Relationship(dependency_node, "USED_BY", game_node))
 
-    def generate_neo4j_cypher(self, games_dependencies):
+    def generate_neo4j_graph(self, games_dependencies):
         for game_name, dependencies in games_dependencies.iteritems():
             # Create a game node
             self.add_game_node(game_name)
             # Create dependency nodes
             for dependency in dependencies:
                 self.add_dependency_node(game_name, dependency)
-        return self.cypher_commands

@@ -9,7 +9,7 @@
 import sys
 from GamesConfigExtractor import GamesConfigExtractor
 from GitHubConfigExtractor import GitHubConfigExtractor
-from CypherGenerator import CypherGenerator
+from Neo4jGraphCreator import Neo4jGraphCreator
 
 GAMES_CONFIG_FILE = "../resources/games.json"
 
@@ -22,10 +22,14 @@ class GNOMEGamesHealthAnalytics:
     def run(self):
         games_config = GamesConfigExtractor(self.game_config_file)
         games_dependencies = GitHubConfigExtractor().extract_games_config(games_config)
-        neo4j_cypher = CypherGenerator().generate_neo4j_cypher(games_dependencies)
-        for command in neo4j_cypher:
-            print command
+        # Enable to directly print the Cypher commands to console
+        # from CypherGenerator import CypherGenerator
+        # neo4j_cypher = CypherGenerator().generate_neo4j_cypher(games_dependencies)
+        # for command in neo4j_cypher:
+        #    print command
 
+        # Build the graph
+        Neo4jGraphCreator().generate_neo4j_graph(games_dependencies)
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
