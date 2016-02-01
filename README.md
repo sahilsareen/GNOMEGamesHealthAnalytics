@@ -43,3 +43,7 @@ See [Liscence](https://github.com/sahilsareen/GNOMEGamesHealthAnalytics/blob/mas
 # Author
 
 - Sahil Sareen (ssareen [AT] gnome [DOT] org)
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/sahilsareen/gnomegameshealthanalytics/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
