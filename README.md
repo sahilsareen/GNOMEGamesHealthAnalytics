@@ -38,7 +38,7 @@ See my [GNOME blog post](https://blogs.gnome.org/ssareen/2016/01/31/gnome-games-
 
 # License
 
-See [Liscence](https://github.com/sahilsareen/GNOMEGamesHealthAnalytics/blob/master/COPYING)
+See [License](https://github.com/sahilsareen/GNOMEGamesHealthAnalytics/blob/master/COPYING)
 
 # Author
 
